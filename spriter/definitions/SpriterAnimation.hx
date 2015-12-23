@@ -176,7 +176,27 @@ class SpriterAnimation
 				}
 			}else if (Std.is(currentKey, SubEntityTimelineKey)){
 				var currentSubKey:SubEntityTimelineKey = cast(currentKey, SubEntityTimelineKey);
-				root.setSubEntityCurrentTime(library, currentSubKey.t, currentSubKey.entity, currentSubKey.animation, spatialInfo);
+
+				var timeline:SpriterTimeline = timelines[currentRef.timeline];
+				var nextKeyIndex:Int = currentRef.key + 1;
+				if(nextKeyIndex >= timeline.keys.length)
+				{
+					if(loopType == LOOPING)
+					{
+						nextKeyIndex = 0;
+					}
+					else
+					{
+						nextKeyIndex = currentRef.key;
+					}
+				}
+				if(nextKeyIndex!=currentRef.key){
+					var keyB:SubEntityTimelineKey = cast(timeline.keys[nextKeyIndex].copy(), SubEntityTimelineKey);
+					var interpolationTime:Float = (newTime-currentSubKey.time)/((keyB.time-currentSubKey.time+length)%length);
+					root.setSubEntityCurrentTime(library, currentSubKey.t+(keyB.t-currentSubKey.t)*interpolationTime, currentSubKey.entity, currentSubKey.animation, spatialInfo);
+				}else{
+					root.setSubEntityCurrentTime(library, currentSubKey.t, currentSubKey.entity, currentSubKey.animation, spatialInfo);
+				}
 			}else {
 				activePivots = new PivotInfo();
 				activePivots = currentKey.paint(activePivots.pivotX, activePivots.pivotY);
