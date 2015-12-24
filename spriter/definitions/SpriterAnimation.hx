@@ -175,7 +175,7 @@ class SpriterAnimation
 					library.addGraphic(root.spriterName, currentRef.timeline, currentRef.key, currentKeyName, spatialInfo, activePivots);
 				}
 			}else if (Std.is(currentKey, SubEntityTimelineKey)){
-				var currentSubKey:SubEntityTimelineKey = cast(currentKey, SubEntityTimelineKey);
+				var keyA:SubEntityTimelineKey = cast(currentKey.copy(), SubEntityTimelineKey);
 
 				var timeline:SpriterTimeline = timelines[currentRef.timeline];
 				var nextKeyIndex:Int = currentRef.key + 1;
@@ -192,10 +192,14 @@ class SpriterAnimation
 				}
 				if(nextKeyIndex!=currentRef.key){
 					var keyB:SubEntityTimelineKey = cast(timeline.keys[nextKeyIndex].copy(), SubEntityTimelineKey);
-					var interpolationTime:Float = (newTime-currentSubKey.time)/((keyB.time-currentSubKey.time+length)%length);
-					root.setSubEntityCurrentTime(library, currentSubKey.t+(keyB.t-currentSubKey.t)*interpolationTime, currentSubKey.entity, currentSubKey.animation, spatialInfo);
+					var keyBTime:Int = keyB.time;
+					if(keyBTime<keyA.time)
+						keyBTime += length;
+					var interpolationTime:Float = keyA.getTWithNextKey(keyB, keyBTime, newTime);
+                    			//trace(keyA.curveType);
+					root.setSubEntityCurrentTime(library, keyA.t+(keyB.t-keyA.t)*interpolationTime, keyA.entity, keyA.animation, spatialInfo);
 				}else{
-					root.setSubEntityCurrentTime(library, currentSubKey.t, currentSubKey.entity, currentSubKey.animation, spatialInfo);
+					root.setSubEntityCurrentTime(library, keyA.t, keyA.entity, keyA.animation, spatialInfo);
 				}
 			}else {
 				activePivots = new PivotInfo();
