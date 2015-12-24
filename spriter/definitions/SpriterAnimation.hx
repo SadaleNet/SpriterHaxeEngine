@@ -196,7 +196,6 @@ class SpriterAnimation
 					if(keyBTime<keyA.time)
 						keyBTime += length;
 					var interpolationTime:Float = keyA.getTWithNextKey(keyB, keyBTime, newTime);
-                    			//trace(keyA.curveType);
 					root.setSubEntityCurrentTime(library, keyA.t+(keyB.t-keyA.t)*interpolationTime, keyA.entity, keyA.animation, spatialInfo);
 				}else{
 					root.setSubEntityCurrentTime(library, keyA.t, keyA.entity, keyA.animation, spatialInfo);
